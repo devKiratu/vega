@@ -1,6 +1,8 @@
 using System;
+using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using vega.Controllers.Resources;
 using vega.Models;
 using vega.Persistence;
@@ -42,6 +44,25 @@ namespace vega.Controllers
 
 
       return Ok(mapper.Map<Vehicle, VehicleResource>(vehicle));
+    }
+
+    [HttpPut("{id}")]
+    public IActionResult UpdateVehicle(int id, [FromBody] VehicleResource vehicleResource) 
+    {
+      var vehicle = context.Vehicles.Include(v => v.Features).SingleOrDefault(v => v.Id == id);
+      if (vehicle == null) {
+        ModelState.AddModelError("VehicleId", "Invalid Vehicle Id");
+        return NotFound(ModelState);
+      }
+
+      var vehicleFromDb = mapper.Map<VehicleResource, Vehicle>(vehicleResource, vehicle);
+      vehicle.LastUpdate = DateTime.Now;
+      context.SaveChanges();
+
+      var result = mapper.Map<Vehicle, VehicleResource>(vehicleFromDb);
+
+      return Ok(result);
+
     }
 
   }

@@ -27,21 +27,27 @@ namespace vega.Mapping
       .ForMember(v => v.ContactPhone, opt => opt.MapFrom(vr => vr.Contact.Phone))
       .ForMember(v => v.Features, opt => opt.Ignore())
       .AfterMap((vr, v) => {
-        //remove unselected Features
-        var removedFeatures = new List<VehicleFeature>();
-        foreach (var f in v.Features) {
-          if (!vr.Features.Contains(f.FeatureId))
-            removedFeatures.Add(f);
-        }
+        //remove unselected Features - method 1
+        // var removedFeatures = new List<VehicleFeature>();
+        // foreach (var f in v.Features) {
+        //   if (!vr.Features.Contains(f.FeatureId))
+        //     removedFeatures.Add(f);
+        // }
+
+        //refactored
+        var removedFeatures = v.Features.Where(f => !vr.Features.Contains(f.FeatureId)).ToList();
         foreach (var f in removedFeatures)
           v.Features.Remove(f);
 
-        //add new feature
-        foreach (var id in vr.Features)
-          if (!v.Features.Any(f => f.FeatureId == id))
-            v.Features.Add(new VehicleFeature { FeatureId = id });
+        //add new feature - method 1
+        // foreach (var id in vr.Features)
+        //   if (!v.Features.Any(f => f.FeatureId == id))
+        //     v.Features.Add(new VehicleFeature { FeatureId = id });
 
-
+        //refactored
+        var addedFeature = vr.Features.Where(id => !v.Features.Any(f => f.FeatureId == id)).Select(id => new VehicleFeature { FeatureId = id }).ToList();
+         foreach (var f in addedFeature)
+            v.Features.Add(f);
       })
       ;
     }

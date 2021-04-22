@@ -65,5 +65,20 @@ namespace vega.Controllers
 
     }
 
+    [HttpDelete("{id}")]
+    public IActionResult DeleteVehicle(int id) 
+    {
+      var vehicle = context.Vehicles.SingleOrDefault(v => v.Id == id);
+      
+      if (vehicle==null) {
+        return NotFound();
+      }
+      context.Vehicles.Remove(vehicle);
+      context.SaveChanges();
+
+      return Ok(id);
+
+    }
+
   }
 }

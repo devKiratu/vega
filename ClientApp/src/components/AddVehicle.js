@@ -125,6 +125,7 @@ function AddVehicle() {
 					</label>
 					<input id="contactPhone" type="tel" className="form-control" />
 				</div>
+				<button className="btn btn-primary">Submit</button>
 			</form>
 		</div>
 	);

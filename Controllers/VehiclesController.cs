@@ -22,6 +22,19 @@ namespace vega.Controllers
     [HttpPost]
     public IActionResult CreateVehicle([FromBody] VehicleResource vehicleResource)
     {
+      if (!ModelState.IsValid) {
+        return BadRequest(ModelState);
+      }
+
+      /*
+      This is extra/unnecessary since client for this endpoint is a frontend app. The first validation is enough. This however stays here for learning purposes
+      */
+      var result = context.Models.Find(vehicleResource.ModelId);
+      if (result == null) {
+        ModelState.AddModelError("ModelId", "Invalid ModelId");
+        return BadRequest(ModelState);
+      }
+
       var vehicle = mapper.Map<VehicleResource, Vehicle>(vehicleResource);
       vehicle.LastUpdate = DateTime.Now;
       context.Vehicles.Add(vehicle);

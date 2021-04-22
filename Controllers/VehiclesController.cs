@@ -24,7 +24,8 @@ namespace vega.Controllers
     [HttpPost]
     public IActionResult CreateVehicle([FromBody] VehicleResource vehicleResource)
     {
-      if (!ModelState.IsValid) {
+      if (!ModelState.IsValid)
+      {
         return BadRequest(ModelState);
       }
 
@@ -32,7 +33,8 @@ namespace vega.Controllers
       This is extra/unnecessary since client for this endpoint is a frontend app. The first validation is enough. This however stays here for learning purposes
       */
       var result = context.Models.Find(vehicleResource.ModelId);
-      if (result == null) {
+      if (result == null)
+      {
         ModelState.AddModelError("ModelId", "Invalid ModelId");
         return BadRequest(ModelState);
       }
@@ -47,10 +49,11 @@ namespace vega.Controllers
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateVehicle(int id, [FromBody] VehicleResource vehicleResource) 
+    public IActionResult UpdateVehicle(int id, [FromBody] VehicleResource vehicleResource)
     {
       var vehicle = context.Vehicles.Include(v => v.Features).SingleOrDefault(v => v.Id == id);
-      if (vehicle == null) {
+      if (vehicle == null)
+      {
         ModelState.AddModelError("VehicleId", "Invalid Vehicle Id");
         return NotFound(ModelState);
       }
@@ -66,17 +69,32 @@ namespace vega.Controllers
     }
 
     [HttpDelete("{id}")]
-    public IActionResult DeleteVehicle(int id) 
+    public IActionResult DeleteVehicle(int id)
     {
       var vehicle = context.Vehicles.SingleOrDefault(v => v.Id == id);
-      
-      if (vehicle==null) {
+
+      if (vehicle == null)
+      {
         return NotFound();
       }
       context.Vehicles.Remove(vehicle);
       context.SaveChanges();
 
       return Ok(id);
+
+    }
+
+    [HttpGet("{id}")]
+    public IActionResult GetVehicle(int id)
+    {
+      var vehicle = context.Vehicles.Include(v => v.Features).SingleOrDefault(v => v.Id == id);
+      if (vehicle == null) {
+        return NotFound();
+      }
+
+      var result = mapper.Map<Vehicle, VehicleResource>(vehicle);
+
+      return Ok(result);
 
     }
 

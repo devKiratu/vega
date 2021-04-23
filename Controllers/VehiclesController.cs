@@ -14,8 +14,10 @@ namespace vega.Controllers
   {
     private readonly IMapper mapper;
     private readonly VegaDbContext context;
-    public VehiclesController(IMapper mapper, VegaDbContext context)
+    private readonly IVehicleRepository repository;
+    public VehiclesController(IMapper mapper, VegaDbContext context, IVehicleRepository repository)
     {
+      this.repository = repository;
       this.context = context;
       this.mapper = mapper;
 
@@ -47,12 +49,7 @@ namespace vega.Controllers
 
       //this code is here to return full vehicle object after creation instead of a SaveVehicleResource object
       //it resets the created resource in memory to include all features
-      vehicle = context.Vehicles
-      .Include(v => v.Model)
-      .ThenInclude(v => v.Make)
-      .Include(v => v.Features)
-      .ThenInclude(vf => vf.Feature)
-      .SingleOrDefault(v => v.Id == vehicle.Id);
+      vehicle = repository.GetVehicle(vehicle.Id);
 
       return Ok(mapper.Map<Vehicle, VehicleResource>(vehicle));
     }
@@ -71,12 +68,7 @@ namespace vega.Controllers
       vehicle.LastUpdate = DateTime.Now;
       context.SaveChanges();
 
-       vehicleFromDb = context.Vehicles
-      .Include(v => v.Model)
-      .ThenInclude(v => v.Make)
-      .Include(v => v.Features)
-      .ThenInclude(vf => vf.Feature)
-      .SingleOrDefault(v => v.Id == vehicleFromDb.Id);
+      vehicleFromDb = repository.GetVehicle(vehicleFromDb.Id);
 
       var result = mapper.Map<Vehicle, VehicleResource>(vehicleFromDb);
 
@@ -103,14 +95,10 @@ namespace vega.Controllers
     [HttpGet("{id}")]
     public IActionResult GetVehicle(int id)
     {
-      var vehicle = context.Vehicles
-      .Include(v => v.Model)
-      .ThenInclude(v => v.Make)
-      .Include(v => v.Features)
-      .ThenInclude(vf => vf.Feature)
-      .SingleOrDefault(v => v.Id == id);
-     
-      if (vehicle == null) {
+      var vehicle = repository.GetVehicle(id);
+
+      if (vehicle == null)
+      {
         return NotFound();
       }
 

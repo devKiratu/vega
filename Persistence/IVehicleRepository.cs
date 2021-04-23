@@ -4,6 +4,8 @@ namespace vega.Persistence
 {
     public interface IVehicleRepository
     {
-      public Vehicle GetVehicle(int id);
-    }
+      Vehicle GetVehicle(int id, bool includeRelated = true);
+      void Add(Vehicle vehicle);
+      void Remove(Vehicle vehicle);
+  }
 }

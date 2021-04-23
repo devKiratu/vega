@@ -15,8 +15,10 @@ namespace vega.Controllers
     private readonly IMapper mapper;
     private readonly VegaDbContext context;
     private readonly IVehicleRepository repository;
-    public VehiclesController(IMapper mapper, VegaDbContext context, IVehicleRepository repository)
+    private readonly IUnitOfWork unitOfWork;
+    public VehiclesController(IMapper mapper, VegaDbContext context, IVehicleRepository repository, IUnitOfWork unitOfWork)
     {
+      this.unitOfWork = unitOfWork;
       this.repository = repository;
       this.context = context;
       this.mapper = mapper;
@@ -34,18 +36,18 @@ namespace vega.Controllers
       /*
       This is extra/unnecessary since client for this endpoint is a frontend app. The first validation is enough. This however stays here for learning purposes
       */
-      var result = context.Models.Find(vehicleResource.ModelId);
-      if (result == null)
-      {
-        ModelState.AddModelError("ModelId", "Invalid ModelId");
-        return BadRequest(ModelState);
-      }
+      // var result = context.Models.Find(vehicleResource.ModelId);
+      // if (result == null)
+      // {
+      //   ModelState.AddModelError("ModelId", "Invalid ModelId");
+      //   return BadRequest(ModelState);
+      // }
 
 
       var vehicle = mapper.Map<SaveVehicleResource, Vehicle>(vehicleResource);
       vehicle.LastUpdate = DateTime.Now;
-      context.Vehicles.Add(vehicle);
-      context.SaveChanges();
+      repository.Add(vehicle);
+      unitOfWork.Complete();
 
       //this code is here to return full vehicle object after creation instead of a SaveVehicleResource object
       //it resets the created resource in memory to include all features
@@ -66,7 +68,7 @@ namespace vega.Controllers
 
       var vehicleFromDb = mapper.Map<SaveVehicleResource, Vehicle>(vehicleResource, vehicle);
       vehicle.LastUpdate = DateTime.Now;
-      context.SaveChanges();
+      unitOfWork.Complete();
 
       vehicleFromDb = repository.GetVehicle(vehicleFromDb.Id);
 
@@ -79,14 +81,14 @@ namespace vega.Controllers
     [HttpDelete("{id}")]
     public IActionResult DeleteVehicle(int id)
     {
-      var vehicle = context.Vehicles.SingleOrDefault(v => v.Id == id);
+      var vehicle = repository.GetVehicle(id, includeRelated: false);
 
       if (vehicle == null)
       {
         return NotFound();
       }
-      context.Vehicles.Remove(vehicle);
-      context.SaveChanges();
+      repository.Remove(vehicle);
+      unitOfWork.Complete();
 
       return Ok(id);
 

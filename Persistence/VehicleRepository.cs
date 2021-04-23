@@ -13,14 +13,27 @@ namespace vega.Persistence
 
     }
 
-    public Vehicle GetVehicle(int id) 
+    public Vehicle GetVehicle(int id, bool includeRelated = true) 
     {
+      if (!includeRelated) 
+        return context.Vehicles.SingleOrDefault(v => v.Id == id);
+      
       return context.Vehicles
       .Include(v => v.Model)
       .ThenInclude(v => v.Make)
       .Include(v => v.Features)
       .ThenInclude(vf => vf.Feature)
       .SingleOrDefault(v => v.Id == id);
+    }
+
+    public void Add(Vehicle vehicle)
+    {
+      context.Add(vehicle);
+    }
+
+    public void Remove(Vehicle vehicle)
+    {
+      context.Remove(vehicle);
     }
 
   }

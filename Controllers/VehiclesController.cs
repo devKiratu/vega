@@ -22,7 +22,7 @@ namespace vega.Controllers
     }
 
     [HttpPost]
-    public IActionResult CreateVehicle([FromBody] VehicleResource vehicleResource)
+    public IActionResult CreateVehicle([FromBody] SaveVehicleResource vehicleResource)
     {
       if (!ModelState.IsValid)
       {
@@ -39,17 +39,26 @@ namespace vega.Controllers
         return BadRequest(ModelState);
       }
 
-      var vehicle = mapper.Map<VehicleResource, Vehicle>(vehicleResource);
+
+      var vehicle = mapper.Map<SaveVehicleResource, Vehicle>(vehicleResource);
       vehicle.LastUpdate = DateTime.Now;
       context.Vehicles.Add(vehicle);
       context.SaveChanges();
 
+      //this code is here to return full vehicle object after creation instead of a SaveVehicleResource object
+      //it resets the created resource in memory to include all features
+      vehicle = context.Vehicles
+      .Include(v => v.Model)
+      .ThenInclude(v => v.Make)
+      .Include(v => v.Features)
+      .ThenInclude(vf => vf.Feature)
+      .SingleOrDefault(v => v.Id == vehicle.Id);
 
       return Ok(mapper.Map<Vehicle, VehicleResource>(vehicle));
     }
 
     [HttpPut("{id}")]
-    public IActionResult UpdateVehicle(int id, [FromBody] VehicleResource vehicleResource)
+    public IActionResult UpdateVehicle(int id, [FromBody] SaveVehicleResource vehicleResource)
     {
       var vehicle = context.Vehicles.Include(v => v.Features).SingleOrDefault(v => v.Id == id);
       if (vehicle == null)
@@ -58,9 +67,16 @@ namespace vega.Controllers
         return NotFound(ModelState);
       }
 
-      var vehicleFromDb = mapper.Map<VehicleResource, Vehicle>(vehicleResource, vehicle);
+      var vehicleFromDb = mapper.Map<SaveVehicleResource, Vehicle>(vehicleResource, vehicle);
       vehicle.LastUpdate = DateTime.Now;
       context.SaveChanges();
+
+       vehicleFromDb = context.Vehicles
+      .Include(v => v.Model)
+      .ThenInclude(v => v.Make)
+      .Include(v => v.Features)
+      .ThenInclude(vf => vf.Feature)
+      .SingleOrDefault(v => v.Id == vehicleFromDb.Id);
 
       var result = mapper.Map<Vehicle, VehicleResource>(vehicleFromDb);
 
@@ -87,7 +103,13 @@ namespace vega.Controllers
     [HttpGet("{id}")]
     public IActionResult GetVehicle(int id)
     {
-      var vehicle = context.Vehicles.Include(v => v.Features).SingleOrDefault(v => v.Id == id);
+      var vehicle = context.Vehicles
+      .Include(v => v.Model)
+      .ThenInclude(v => v.Make)
+      .Include(v => v.Features)
+      .ThenInclude(vf => vf.Feature)
+      .SingleOrDefault(v => v.Id == id);
+     
       if (vehicle == null) {
         return NotFound();
       }

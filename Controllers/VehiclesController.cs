@@ -1,8 +1,6 @@
 using System;
-using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using vega.Controllers.Resources;
 using vega.Models;
 using vega.Persistence;
@@ -13,14 +11,12 @@ namespace vega.Controllers
   public class VehiclesController : Controller
   {
     private readonly IMapper mapper;
-    private readonly VegaDbContext context;
     private readonly IVehicleRepository repository;
     private readonly IUnitOfWork unitOfWork;
-    public VehiclesController(IMapper mapper, VegaDbContext context, IVehicleRepository repository, IUnitOfWork unitOfWork)
+    public VehiclesController(IMapper mapper, IVehicleRepository repository, IUnitOfWork unitOfWork)
     {
       this.unitOfWork = unitOfWork;
       this.repository = repository;
-      this.context = context;
       this.mapper = mapper;
 
     }
@@ -32,17 +28,6 @@ namespace vega.Controllers
       {
         return BadRequest(ModelState);
       }
-
-      /*
-      This is extra/unnecessary since client for this endpoint is a frontend app. The first validation is enough. This however stays here for learning purposes
-      */
-      // var result = context.Models.Find(vehicleResource.ModelId);
-      // if (result == null)
-      // {
-      //   ModelState.AddModelError("ModelId", "Invalid ModelId");
-      //   return BadRequest(ModelState);
-      // }
-
 
       var vehicle = mapper.Map<SaveVehicleResource, Vehicle>(vehicleResource);
       vehicle.LastUpdate = DateTime.Now;
@@ -59,7 +44,7 @@ namespace vega.Controllers
     [HttpPut("{id}")]
     public IActionResult UpdateVehicle(int id, [FromBody] SaveVehicleResource vehicleResource)
     {
-      var vehicle = context.Vehicles.Include(v => v.Features).SingleOrDefault(v => v.Id == id);
+      var vehicle = repository.GetVehicle(id);
       if (vehicle == null)
       {
         ModelState.AddModelError("VehicleId", "Invalid Vehicle Id");

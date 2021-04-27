@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams, useHistory } from "react-router";
 
 function AddVehicle() {
 	const [makes, setMakes] = useState([]);
@@ -11,6 +12,8 @@ function AddVehicle() {
 	const [email, setEmail] = useState("");
 	const [phone, setPhone] = useState("");
 	const [selectedFeatures, setSelectedFeatures] = useState([]);
+	const history = useHistory();
+	const { id } = useParams();
 
 	async function handleSubmit(e) {
 		e.preventDefault();
@@ -24,20 +27,47 @@ function AddVehicle() {
 			},
 			features: [...selectedFeatures],
 		};
-		const res = await fetch("api/vehicles", {
-			method: "POST",
-			headers: {
-				"content-type": "application/json",
-			},
-			body: JSON.stringify(requestObj),
-		});
-		const data = await res.json();
-		console.log("request data was: ", requestObj);
-		console.log("response data is: ", data);
+
+		if (id) {
+			const res = await fetch(`api/vehicles/${id}`, {
+				method: "PUT",
+				headers: {
+					"content-type": "application/json",
+				},
+				body: JSON.stringify(requestObj),
+			});
+			const data = await res.json();
+			console.log("update data was: ", requestObj);
+			console.log("updated vehicle is: ", data);
+		} else {
+			const res = await fetch("api/vehicles", {
+				method: "POST",
+				headers: {
+					"content-type": "application/json",
+				},
+				body: JSON.stringify(requestObj),
+			});
+			const data = await res.json();
+			console.log("request data was: ", requestObj);
+			console.log("response data is: ", data);
+		}
+		history.push("/");
+	}
+
+	async function handleDelete() {
+		if (window.confirm("Do you want to delete this record?")) {
+			console.log("record deleted", id);
+			const res = await fetch(`api/vehicles/${id}`, {
+				method: "DELETE",
+			});
+			const info = await res.json();
+			console.log("from delete", info);
+			history.push("/vehicles/new");
+		}
 	}
 
 	function populateSelectedFeatures(e) {
-		const id = e.target.value;
+		const id = parseInt(e.target.value);
 		if (selectedFeatures.includes(id)) {
 			setSelectedFeatures(selectedFeatures.filter((f) => f !== id));
 		} else {
@@ -46,10 +76,9 @@ function AddVehicle() {
 	}
 
 	function populateModels() {
-		let [group] = makes.filter((make) => make.id.toString() === makeId);
-		if (makeId > 0) {
-			setVModel(group.models);
-		}
+		makes.map(
+			(m) => makeId && m.id === parseInt(makeId) && setVModel(m.models)
+		);
 	}
 
 	useEffect(() => {
@@ -68,15 +97,34 @@ function AddVehicle() {
 		setFetures(data);
 	}
 
+	async function getVehicle(id) {
+		const res = await fetch(`api/vehicles/${id}`);
+
+		const data =
+			res.status !== 404 ? await res.json() : history.push("/vehicles/new");
+		if (data) {
+			setIsRegistered(data.isRegistered);
+			setSelectedFeatures(data.features.map((f) => f.id));
+			setName(data.contact.name);
+			setEmail(data.contact.email);
+			setPhone(data.contact.phone);
+			setMakeId(data.make.id);
+			setModelId(data.model.id);
+		}
+	}
+
 	useEffect(() => {
 		GetMakes();
 		getFeatures();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		if (id) {
+			getVehicle(id);
+		}
+		//eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (
 		<div>
-			<h1>New Vehicle</h1>
+			<h1>{id ? "Edit Vehicle" : "New Vehicle"}</h1>
 			<form onSubmit={handleSubmit}>
 				<div className="form-group">
 					<label htmlFor="make" className="form-label">
@@ -87,6 +135,7 @@ function AddVehicle() {
 						id="make"
 						className="form-select"
 						onChange={(e) => setMakeId(e.target.value)}
+						value={makeId}
 					>
 						<option value=""></option>
 						{makes.map((make) => (
@@ -105,6 +154,7 @@ function AddVehicle() {
 						id="model"
 						className="form-select"
 						onChange={(e) => setModelId(e.target.value)}
+						value={modelId}
 					>
 						<option value=""></option>
 
@@ -125,6 +175,7 @@ function AddVehicle() {
 						name="isRegistered"
 						id="yes"
 						onChange={() => setIsRegistered(true)}
+						checked={isRegistered === true}
 					/>
 					<label htmlFor="yes" className="form-check-label">
 						Yes
@@ -137,6 +188,7 @@ function AddVehicle() {
 						name="isRegistered"
 						id="no"
 						onChange={() => setIsRegistered(false)}
+						checked={isRegistered === false}
 					/>
 					<label htmlFor="no" className="form-check-label">
 						No
@@ -151,6 +203,7 @@ function AddVehicle() {
 							id={f.name}
 							value={f.id}
 							onChange={populateSelectedFeatures}
+							checked={selectedFeatures.includes(f.id)}
 						/>
 						<label className="form-check-label" htmlFor={f.name}>
 							{f.name}
@@ -195,7 +248,16 @@ function AddVehicle() {
 						onChange={(e) => setPhone(e.target.value)}
 					/>
 				</div>
-				<button className="btn btn-primary">Submit</button>
+				<button className="btn btn-primary">Save</button>
+				{id && (
+					<button
+						type="button"
+						className="btn btn-danger ml-3"
+						onClick={handleDelete}
+					>
+						Delete
+					</button>
+				)}
 			</form>
 		</div>
 	);

@@ -136,6 +136,7 @@ function AddVehicle() {
 						className="form-select"
 						onChange={(e) => setMakeId(e.target.value)}
 						value={makeId}
+						required
 					>
 						<option value=""></option>
 						{makes.map((make) => (
@@ -155,6 +156,7 @@ function AddVehicle() {
 						className="form-select"
 						onChange={(e) => setModelId(e.target.value)}
 						value={modelId}
+						required
 					>
 						<option value=""></option>
 
@@ -222,6 +224,7 @@ function AddVehicle() {
 						className="form-control"
 						value={name}
 						onChange={(e) => setName(e.target.value)}
+						required
 					/>
 				</div>
 				<div className="form-group">
@@ -246,6 +249,7 @@ function AddVehicle() {
 						className="form-control"
 						value={phone}
 						onChange={(e) => setPhone(e.target.value)}
+						required
 					/>
 				</div>
 				<button className="btn btn-primary">Save</button>

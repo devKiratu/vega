@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useHistory } from "react-router";
+import toast from "react-hot-toast";
+
+const successToast = () =>
+	toast.success("Vehicles register successfully updated", {
+		duration: 5000,
+		style: { backgroundColor: "#90EE90" },
+	});
 
 function AddVehicle() {
 	const [makes, setMakes] = useState([]);
@@ -14,7 +21,6 @@ function AddVehicle() {
 	const [selectedFeatures, setSelectedFeatures] = useState([]);
 	const history = useHistory();
 	const { id } = useParams();
-
 	async function handleSubmit(e) {
 		e.preventDefault();
 		const requestObj = {
@@ -36,9 +42,10 @@ function AddVehicle() {
 				},
 				body: JSON.stringify(requestObj),
 			});
-			const data = await res.json();
-			console.log("update data was: ", requestObj);
-			console.log("updated vehicle is: ", data);
+			await res.json();
+			res.status === 200 && successToast();
+			// console.log("update data was: ", requestObj);
+			// console.log("updated vehicle is: ", data);
 		} else {
 			const res = await fetch("api/vehicles", {
 				method: "POST",
@@ -47,9 +54,11 @@ function AddVehicle() {
 				},
 				body: JSON.stringify(requestObj),
 			});
-			const data = await res.json();
-			console.log("request data was: ", requestObj);
-			console.log("response data is: ", data);
+			await res.json();
+			res.status === 200 && successToast();
+
+			// console.log("request data was: ", requestObj);
+			// console.log("response data is: ", data);
 		}
 		history.push("/");
 	}

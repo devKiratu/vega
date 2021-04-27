@@ -7,6 +7,7 @@ import { Counter } from "./components/Counter";
 
 import "./custom.css";
 import AddVehicle from "./components/AddVehicle";
+import { Toaster } from "react-hot-toast";
 
 export default class App extends Component {
 	static displayName = App.name;
@@ -21,6 +22,7 @@ export default class App extends Component {
 					<Route path="/vehicles/new" component={AddVehicle} />
 					<Route path="/vehicles/:id" component={AddVehicle} />
 				</Switch>
+				<Toaster />
 			</Layout>
 		);
 	}

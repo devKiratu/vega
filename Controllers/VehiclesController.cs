@@ -81,13 +81,13 @@ namespace vega.Controllers
     }
 
     [HttpGet] 
-    public IActionResult GetVehicles() 
+    public IActionResult GetVehicles(FilterResource filterResource) 
     {
-      var vehicle = repository.GetVehicles();
+      var filter = mapper.Map<FilterResource, Filter>(filterResource);
+      var vehicle = repository.GetVehicles(filter);
       var vehicleList = mapper.Map<IEnumerable<Vehicle>, IEnumerable<VehicleResource>>(vehicle);
 
       return Ok(vehicleList);
-
     }
 
     [HttpGet("{id}")]

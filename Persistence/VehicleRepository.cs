@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using vega.Controllers.Resources;
 using vega.Models;
 
 namespace vega.Persistence
@@ -27,17 +28,22 @@ namespace vega.Persistence
       .SingleOrDefault(v => v.Id == id);
     }
 
-    public IEnumerable<Vehicle> GetVehicles() 
+    public IEnumerable<Vehicle> GetVehicles(Filter filter) 
     {
-      return context.Vehicles
+      var query = context.Vehicles
         .Include(v => v.Model)
         .ThenInclude(v => v.Make)
         .Include(v => v.Features)
         .ThenInclude(vf => vf.Feature)
-        .ToList();
+        .AsQueryable();
+
+      if (filter.MakeId.HasValue) {
+        query = query.Where(v => v.Model.MakeId == filter.MakeId.Value);
+      }
+
+      return query.ToList();
 
     }
-
     public void Add(Vehicle vehicle)
     {
       context.Add(vehicle);

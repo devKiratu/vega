@@ -71,7 +71,7 @@ function AddVehicle() {
 			});
 			const info = await res.json();
 			console.log("from delete", info);
-			history.push("/vehicles/new");
+			history.push("/vehicles");
 		}
 	}
 
@@ -110,7 +110,7 @@ function AddVehicle() {
 		const res = await fetch(`api/vehicles/${id}`);
 
 		const data =
-			res.status !== 404 ? await res.json() : history.push("/vehicles/new");
+			res.status !== 404 ? await res.json() : history.push("/vehicles");
 		if (data) {
 			setIsRegistered(data.isRegistered);
 			setSelectedFeatures(data.features.map((f) => f.id));

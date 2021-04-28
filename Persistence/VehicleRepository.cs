@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using vega.Models;
@@ -24,6 +25,17 @@ namespace vega.Persistence
       .Include(v => v.Features)
       .ThenInclude(vf => vf.Feature)
       .SingleOrDefault(v => v.Id == id);
+    }
+
+    public IEnumerable<Vehicle> GetVehicles() 
+    {
+      return context.Vehicles
+        .Include(v => v.Model)
+        .ThenInclude(v => v.Make)
+        .Include(v => v.Features)
+        .ThenInclude(vf => vf.Feature)
+        .ToList();
+
     }
 
     public void Add(Vehicle vehicle)

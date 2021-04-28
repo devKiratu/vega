@@ -44,27 +44,33 @@ function DisplayVehicles() {
 			<NavLink to="/vehicles/new">
 				<button className="btn btn-primary">Add Vehicle</button>
 			</NavLink>
-			<div className="form-group mt-3">
-				<label htmlFor="makes" className="form-label">
-					Select Make
-				</label>
-				<select
-					name="makes"
-					id="makes"
-					className="form-select"
-					onChange={filterVehicles}
-				>
-					<option value=""></option>
-					{makes.map((m) => (
-						<option key={m.id} value={m.id}>
-							{m.name}
-						</option>
-					))}
-				</select>
-				<button className="btn btn-secondary mt-2" onClick={filterVehicles}>
-					Reset
-				</button>
-			</div>
+			<form>
+				<div className="form-group mt-3">
+					<label htmlFor="makes" className="form-label">
+						Select Make
+					</label>
+					<select
+						name="makes"
+						id="makes"
+						className="form-select"
+						onChange={filterVehicles}
+					>
+						<option value=""></option>
+						{makes.map((m) => (
+							<option key={m.id} value={m.id}>
+								{m.name}
+							</option>
+						))}
+					</select>
+					<button
+						type="reset"
+						className="btn btn-secondary mt-2"
+						onClick={filterVehicles}
+					>
+						Reset
+					</button>
+				</div>
+			</form>
 
 			<table className="table table-hover table-border my-5">
 				<thead>

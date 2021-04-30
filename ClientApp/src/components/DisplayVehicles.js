@@ -4,28 +4,19 @@ import { Link, NavLink } from "react-router-dom";
 function DisplayVehicles() {
 	const [vehicles, setVehicles] = useState([]);
 	const [makes, setMakes] = useState([]);
-	const [allVehicles, setAllVehicles] = useState([]);
+	const [makeId, setMakeId] = useState();
 
 	function filterVehicles(e) {
 		const id = e.target.value;
-		const filter = [...allVehicles];
-		if (id !== "") {
-			setVehicles(filter.filter((v) => v.make.id == id));
-		} else {
-			setVehicles(allVehicles);
-		}
-
-		// console.log(id);
+		setMakeId(id);
 	}
 
 	async function getVehicles() {
-		const res = await fetch("api/vehicles", {
+		const res = await fetch(`api/vehicles/?MakeId=${makeId}`, {
 			method: "GET",
 		});
 		const data = await res.json();
 		setVehicles(data);
-		setAllVehicles(data);
-		// console.log("the vehicles are ", data);
 	}
 
 	async function GetMakes() {
@@ -36,7 +27,13 @@ function DisplayVehicles() {
 
 	useEffect(() => {
 		getVehicles();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [makeId]);
+
+	useEffect(() => {
+		getVehicles();
 		GetMakes();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	return (

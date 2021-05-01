@@ -81,9 +81,9 @@ namespace vega.Controllers
     }
 
     [HttpGet] 
-    public IActionResult GetVehicles(FilterResource filterResource) 
+    public IActionResult GetVehicles(VehicleQueryResource queryResource) 
     {
-      var filter = mapper.Map<FilterResource, Filter>(filterResource);
+      var filter = mapper.Map<VehicleQueryResource, VehicleQuery>(queryResource);
       var vehicle = repository.GetVehicles(filter);
       var vehicleList = mapper.Map<IEnumerable<Vehicle>, IEnumerable<VehicleResource>>(vehicle);
 

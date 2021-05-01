@@ -28,7 +28,7 @@ namespace vega.Persistence
       .SingleOrDefault(v => v.Id == id);
     }
 
-    public IEnumerable<Vehicle> GetVehicles(Filter filter) 
+    public IEnumerable<Vehicle> GetVehicles(VehicleQuery queryObj) 
     {
       var query = context.Vehicles
         .Include(v => v.Model)
@@ -37,8 +37,20 @@ namespace vega.Persistence
         .ThenInclude(vf => vf.Feature)
         .AsQueryable();
 
-      if (filter.MakeId.HasValue) {
-        query = query.Where(v => v.Model.MakeId == filter.MakeId.Value);
+     //filtering
+      if (queryObj.MakeId.HasValue) {
+        query = query.Where(v => v.Model.MakeId == queryObj.MakeId.Value);
+      }
+
+    //sorting
+    if (queryObj.SortBy == "make") {
+        query = queryObj.IsSortAscending ? query.OrderBy(v => v.Model.Make.Name) : query.OrderByDescending(v => v.Model.Make.Name);
+      }
+    if (queryObj.SortBy == "model") {
+        query = queryObj.IsSortAscending ? query.OrderBy(v => v.Model.Name) : query.OrderByDescending(v => v.Model.Name);
+      }
+    if (queryObj.SortBy == "contactName") {
+        query = queryObj.IsSortAscending ? query.OrderBy(v => v.ContactName) : query.OrderByDescending(v => v.ContactName);
       }
 
       return query.ToList();

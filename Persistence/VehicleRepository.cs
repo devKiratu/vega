@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using vega.Controllers.Resources;
 using vega.Models;
@@ -42,16 +44,18 @@ namespace vega.Persistence
         query = query.Where(v => v.Model.MakeId == queryObj.MakeId.Value);
       }
 
-    //sorting
-    if (queryObj.SortBy == "make") {
-        query = queryObj.IsSortAscending ? query.OrderBy(v => v.Model.Make.Name) : query.OrderByDescending(v => v.Model.Make.Name);
-      }
-    if (queryObj.SortBy == "model") {
-        query = queryObj.IsSortAscending ? query.OrderBy(v => v.Model.Name) : query.OrderByDescending(v => v.Model.Name);
-      }
-    if (queryObj.SortBy == "contactName") {
-        query = queryObj.IsSortAscending ? query.OrderBy(v => v.ContactName) : query.OrderByDescending(v => v.ContactName);
-      }
+      var sortingMap = new Dictionary<string, Expression<Func<Vehicle, object>>>()
+      {
+        ["make"] = v => v.Model.Make.Name,
+        ["model"] = v => v.Model.Name,
+        ["contactName"] = v => v.ContactName,
+      };
+      //sorting
+      if (queryObj.SortBy !=null && sortingMap.ContainsKey(queryObj.SortBy)) {
+        query = queryObj.IsSortAscending
+        ? query.OrderBy(sortingMap[queryObj.SortBy]) 
+        : query.OrderByDescending(sortingMap[queryObj.SortBy]);
+        }
 
       return query.ToList();
 

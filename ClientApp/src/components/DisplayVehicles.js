@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
 
 function DisplayVehicles() {
 	const [vehicles, setVehicles] = useState([]);
@@ -86,9 +88,21 @@ function DisplayVehicles() {
 						<th>ID</th>
 						<th id="make" style={{ cursor: "pointer" }} onClick={sortVehicles}>
 							Make
+							{sortBy === "make" && (
+								<FontAwesomeIcon
+									icon={isAsc ? faSortUp : faSortDown}
+									className="ml-2"
+								/>
+							)}
 						</th>
 						<th id="model" style={{ cursor: "pointer" }} onClick={sortVehicles}>
 							Model
+							{sortBy === "model" && (
+								<FontAwesomeIcon
+									icon={isAsc ? faSortUp : faSortDown}
+									className="ml-2"
+								/>
+							)}
 						</th>
 						<th
 							id="contactName"
@@ -96,6 +110,12 @@ function DisplayVehicles() {
 							onClick={sortVehicles}
 						>
 							Contact Name
+							{sortBy === "contactName" && (
+								<FontAwesomeIcon
+									icon={isAsc ? faSortUp : faSortDown}
+									className="ml-2"
+								/>
+							)}
 						</th>
 						<th>Action</th>
 					</tr>

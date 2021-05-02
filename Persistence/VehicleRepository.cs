@@ -51,13 +51,20 @@ namespace vega.Persistence
         ["contactName"] = v => v.ContactName,
       };
       //sorting
-      if (queryObj.SortBy !=null && sortingMap.ContainsKey(queryObj.SortBy)) {
-        query = queryObj.IsSortAscending
-        ? query.OrderBy(sortingMap[queryObj.SortBy]) 
-        : query.OrderByDescending(sortingMap[queryObj.SortBy]);
-        }
+      query = ApplySorting(queryObj, query, sortingMap);
 
       return query.ToList();
+
+    }
+    private IQueryable<Vehicle> ApplySorting(VehicleQuery queryObj, IQueryable<Vehicle> query, Dictionary<string, Expression<Func<Vehicle, object>>> sortingMap)
+    {
+        if (queryObj.SortBy !=null && sortingMap.ContainsKey(queryObj.SortBy)) {
+        return query = queryObj.IsSortAscending
+        ? query.OrderBy(sortingMap[queryObj.SortBy]) 
+        : query.OrderByDescending(sortingMap[queryObj.SortBy]);
+        } else {
+         return query;
+        }
 
     }
     public void Add(Vehicle vehicle)

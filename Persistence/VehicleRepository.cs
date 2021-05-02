@@ -54,6 +54,9 @@ namespace vega.Persistence
       //sorting
       query = query.ApplySorting(queryObj, sortingMap);
 
+      //Paging
+      query = query.ApplyPaging(queryObj);
+
       return query.ToList();
 
     }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using vega.Controllers.Resources;
+using vega.Extensions;
 using vega.Models;
 
 namespace vega.Persistence
@@ -51,22 +52,12 @@ namespace vega.Persistence
         ["contactName"] = v => v.ContactName,
       };
       //sorting
-      query = ApplySorting(queryObj, query, sortingMap);
+      query = query.ApplySorting(queryObj, sortingMap);
 
       return query.ToList();
 
     }
-    private IQueryable<Vehicle> ApplySorting(VehicleQuery queryObj, IQueryable<Vehicle> query, Dictionary<string, Expression<Func<Vehicle, object>>> sortingMap)
-    {
-        if (queryObj.SortBy !=null && sortingMap.ContainsKey(queryObj.SortBy)) {
-        return query = queryObj.IsSortAscending
-        ? query.OrderBy(sortingMap[queryObj.SortBy]) 
-        : query.OrderByDescending(sortingMap[queryObj.SortBy]);
-        } else {
-         return query;
-        }
-
-    }
+  
     public void Add(Vehicle vehicle)
     {
       context.Add(vehicle);

@@ -5,16 +5,27 @@ function DisplayVehicles() {
 	const [vehicles, setVehicles] = useState([]);
 	const [makes, setMakes] = useState([]);
 	const [makeId, setMakeId] = useState();
+	const [sortBy, setSortBy] = useState();
+	const [isAsc, setIsAsc] = useState(false);
 
 	function filterVehicles(e) {
 		const id = e.target.value;
 		setMakeId(id);
 	}
 
+	function sortVehicles(e) {
+		const column = e.target.id;
+		setSortBy(column);
+		setIsAsc(!isAsc);
+	}
+
 	async function getVehicles() {
-		const res = await fetch(`api/vehicles/?MakeId=${makeId}`, {
-			method: "GET",
-		});
+		const res = await fetch(
+			`api/vehicles/?MakeId=${makeId}&SortBy=${sortBy}&IsSortAscending=${isAsc}`,
+			{
+				method: "GET",
+			}
+		);
 		const data = await res.json();
 		setVehicles(data);
 	}
@@ -28,7 +39,7 @@ function DisplayVehicles() {
 	useEffect(() => {
 		getVehicles();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [makeId]);
+	}, [makeId, sortBy, isAsc]);
 
 	useEffect(() => {
 		getVehicles();
@@ -73,9 +84,19 @@ function DisplayVehicles() {
 				<thead>
 					<tr>
 						<th>ID</th>
-						<th>Make</th>
-						<th>Model</th>
-						<th>Contact Name</th>
+						<th id="make" style={{ cursor: "pointer" }} onClick={sortVehicles}>
+							Make
+						</th>
+						<th id="model" style={{ cursor: "pointer" }} onClick={sortVehicles}>
+							Model
+						</th>
+						<th
+							id="contactName"
+							style={{ cursor: "pointer" }}
+							onClick={sortVehicles}
+						>
+							Contact Name
+						</th>
 						<th>Action</th>
 					</tr>
 				</thead>

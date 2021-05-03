@@ -10,12 +10,13 @@ function DisplayVehicles() {
 	const [makeId, setMakeId] = useState();
 	const [sortBy, setSortBy] = useState();
 	const [isAsc, setIsAsc] = useState(false);
-	const [totalRecords, setTotalRecords] = useState(9);
+	const [totalRecords, setTotalRecords] = useState(0);
 	const [page, setPage] = useState(1);
 	const pageSize = 4;
 
 	function filterVehicles(e) {
 		const id = e.target.value;
+		setPage(1);
 		setMakeId(id);
 	}
 
@@ -33,7 +34,8 @@ function DisplayVehicles() {
 			}
 		);
 		const data = await res.json();
-		setVehicles(data);
+		setVehicles(data.items);
+		setTotalRecords(data.totalItems);
 	}
 
 	async function GetMakes() {

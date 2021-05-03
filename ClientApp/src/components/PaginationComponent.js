@@ -10,7 +10,7 @@ function PaginationComponent({ total, pageSize, page, setPage }) {
 		<div>
 			<button
 				className="btn btn-light"
-				hidden={page == 1}
+				disabled={page === 1}
 				onClick={() => setPage(1)}
 			>
 				&lt;&lt;
@@ -18,7 +18,7 @@ function PaginationComponent({ total, pageSize, page, setPage }) {
 			{pages.map((p, i) => (
 				<button
 					key={i}
-					className={page == i + 1 ? "btn btn-primary" : "btn btn-light"}
+					className={page === i + 1 ? "btn btn-primary" : "btn btn-light"}
 					onClick={() => setPage(i + 1)}
 				>
 					{i + 1}
@@ -26,7 +26,7 @@ function PaginationComponent({ total, pageSize, page, setPage }) {
 			))}
 			<button
 				className="btn btn-light"
-				hidden={page == totalPages}
+				disabled={page === totalPages}
 				onClick={() => setPage(totalPages)}
 			>
 				&gt;&gt;

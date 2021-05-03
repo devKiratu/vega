@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSortDown, faSortUp } from "@fortawesome/free-solid-svg-icons";
+import PaginationComponent from "./PaginationComponent";
 
 function DisplayVehicles() {
 	const [vehicles, setVehicles] = useState([]);
@@ -9,6 +10,9 @@ function DisplayVehicles() {
 	const [makeId, setMakeId] = useState();
 	const [sortBy, setSortBy] = useState();
 	const [isAsc, setIsAsc] = useState(false);
+	const [totalRecords, setTotalRecords] = useState(9);
+	const [page, setPage] = useState(1);
+	const pageSize = 4;
 
 	function filterVehicles(e) {
 		const id = e.target.value;
@@ -23,7 +27,7 @@ function DisplayVehicles() {
 
 	async function getVehicles() {
 		const res = await fetch(
-			`api/vehicles/?MakeId=${makeId}&SortBy=${sortBy}&IsSortAscending=${isAsc}`,
+			`api/vehicles/?MakeId=${makeId}&SortBy=${sortBy}&IsSortAscending=${isAsc}&Page=${page}&PageSize=${pageSize}`,
 			{
 				method: "GET",
 			}
@@ -41,7 +45,7 @@ function DisplayVehicles() {
 	useEffect(() => {
 		getVehicles();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [makeId, sortBy, isAsc]);
+	}, [makeId, sortBy, isAsc, page]);
 
 	useEffect(() => {
 		getVehicles();
@@ -134,6 +138,12 @@ function DisplayVehicles() {
 					))}
 				</tbody>
 			</table>
+			<PaginationComponent
+				total={totalRecords}
+				pageSize={pageSize}
+				page={page}
+				setPage={setPage}
+			/>
 		</div>
 	);
 }

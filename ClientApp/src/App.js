@@ -9,6 +9,7 @@ import "./custom.css";
 import AddVehicle from "./components/AddVehicle";
 import { Toaster } from "react-hot-toast";
 import DisplayVehicles from "./components/DisplayVehicles";
+import ViewVehicle from "./components/ViewVehicle";
 
 export default class App extends Component {
 	static displayName = App.name;
@@ -23,7 +24,8 @@ export default class App extends Component {
 					<Route path="/counter" component={Counter} />
 					<Route path="/fetch-data" component={FetchData} />
 					<Route path="/vehicles/new" component={AddVehicle} />
-					<Route path="/vehicles/:id" component={AddVehicle} />
+					<Route path="/vehicles/edit/:id" component={AddVehicle} />
+					<Route path="/vehicles/:id" component={ViewVehicle} />
 					<Route path="/vehicles" component={DisplayVehicles} />
 				</Switch>
 				<Toaster />

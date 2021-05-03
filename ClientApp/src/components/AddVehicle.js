@@ -63,18 +63,6 @@ function AddVehicle() {
 		history.push("/");
 	}
 
-	async function handleDelete() {
-		if (window.confirm("Do you want to delete this record?")) {
-			console.log("record deleted", id);
-			const res = await fetch(`api/vehicles/${id}`, {
-				method: "DELETE",
-			});
-			const info = await res.json();
-			console.log("from delete", info);
-			history.push("/vehicles");
-		}
-	}
-
 	function populateSelectedFeatures(e) {
 		const id = parseInt(e.target.value);
 		if (selectedFeatures.includes(id)) {
@@ -262,15 +250,6 @@ function AddVehicle() {
 					/>
 				</div>
 				<button className="btn btn-primary">Save</button>
-				{id && (
-					<button
-						type="button"
-						className="btn btn-danger ml-3"
-						onClick={handleDelete}
-					>
-						Delete
-					</button>
-				)}
 			</form>
 		</div>
 	);

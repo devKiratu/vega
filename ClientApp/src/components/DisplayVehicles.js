@@ -134,7 +134,7 @@ function DisplayVehicles() {
 							<td>{v.model.name}</td>
 							<td>{v.contact.name}</td>
 							<td>
-								<Link to={`/vehicles/${v.id}`}>Edit</Link>
+								<Link to={`/vehicles/${v.id}`}>View</Link>
 							</td>
 						</tr>
 					))}

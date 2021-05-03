@@ -44,6 +44,8 @@ function AddVehicle() {
 			});
 			await res.json();
 			res.status === 200 && successToast();
+			history.push(`/vehicles/${id}`);
+
 			// console.log("update data was: ", requestObj);
 			// console.log("updated vehicle is: ", data);
 		} else {
@@ -54,13 +56,13 @@ function AddVehicle() {
 				},
 				body: JSON.stringify(requestObj),
 			});
-			await res.json();
+			const data = await res.json();
 			res.status === 200 && successToast();
+			history.push(`/vehicles/${data.id}`);
 
 			// console.log("request data was: ", requestObj);
 			// console.log("response data is: ", data);
 		}
-		history.push("/");
 	}
 
 	function populateSelectedFeatures(e) {

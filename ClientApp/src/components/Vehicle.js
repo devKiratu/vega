@@ -4,7 +4,7 @@ import { Link, useHistory } from "react-router-dom";
 function Vehicle({ id }) {
 	const history = useHistory();
 	const [vehicle, setVehicle] = useState();
-	console.log("on render", vehicle);
+	// console.log("on render", vehicle);
 
 	async function getVehicle() {
 		const res = await fetch(`api/vehicles/${id}`);
@@ -26,6 +26,7 @@ function Vehicle({ id }) {
 
 	useEffect(() => {
 		getVehicle();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 	return vehicle ? (
 		<div className="my-4">

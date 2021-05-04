@@ -16,7 +16,7 @@ function ViewVehicle() {
 				vehicle={vehicle}
 				setVehicle={setVehicle}
 			/>
-			{vehicle ? <Vehicle id={id} /> : <VehiclePhotos />}
+			{vehicle ? <Vehicle id={id} /> : <VehiclePhotos p={photos} />}
 		</div>
 	);
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using AutoMapper;
@@ -35,7 +36,7 @@ namespace vega.Controllers
     {
       //validation:
       var vehicle = repository.GetVehicle(vehicleId, includeRelated: false);
-      if (vehicle == null) return NotFound();
+      if (vehicle == null) return NotFound("Vehicle does not exist");
 
       if (file == null) return BadRequest("File is Null");
       if (file.Length == 0) return BadRequest("File is Empty");
@@ -68,6 +69,14 @@ namespace vega.Controllers
       //map response to photoResource
       var result = mapper.Map<Photo, PhotoResource>(photo);
 
+      return Ok(result);
+    }
+
+    [HttpGet]
+    public IActionResult GetVehiclePhotos(int vehicleId) 
+    {
+      var photos = repository.GetPhotos(vehicleId);
+      var result = mapper.Map<IEnumerable<Photo>, IEnumerable<PhotoResource>>(photos);
       return Ok(result);
     }
   }

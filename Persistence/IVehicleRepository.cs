@@ -8,7 +8,8 @@ namespace vega.Persistence
     {
       Vehicle GetVehicle(int id, bool includeRelated = true);
       QueryResult<Vehicle> GetVehicles(VehicleQuery queryObj);
-   
+      IEnumerable<Photo> GetPhotos(int id);
+
     void Add(Vehicle vehicle);
       void Remove(Vehicle vehicle);
   }

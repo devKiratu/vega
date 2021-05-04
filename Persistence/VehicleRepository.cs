@@ -66,6 +66,12 @@ namespace vega.Persistence
       return queryResult;
 
     }
+
+    public IEnumerable<Photo> GetPhotos(int id) 
+    {
+      var photos = context.Photos.Where(p => p.VehicleId == id).ToList();
+      return photos;
+    }
   
     public void Add(Vehicle vehicle)
     {

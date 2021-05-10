@@ -10,16 +10,16 @@ RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get install -y nodejs
 
 WORKDIR /src
-COPY ["dockerfy.csproj", "."]
-RUN dotnet restore "./dockerfy.csproj"
+COPY ["vega.csproj", "."]
+RUN dotnet restore "./vega.csproj"
 COPY . .
 WORKDIR "/src/."
-RUN dotnet build "dockerfy.csproj" -c Release -o /app/build
+RUN dotnet build "vega.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "dockerfy.csproj" -c Release -o /app/publish
+RUN dotnet publish "vega.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "dockerfy.dll"]
+ENTRYPOINT ["dotnet", "vega.dll"]
